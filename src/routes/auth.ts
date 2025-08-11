@@ -47,7 +47,7 @@ passport.use(new GoogleStrategy({
 }));
 
 // Sign up
-router.post('/signup', csrfProtection, async (req: Request, res: Response) => {
+router.post('/signup', async (req: Request, res: Response) => {
   try {
     const { email, password, name } = req.body;
     const sanitizedEmail = sanitizeInput(email);
@@ -90,7 +90,7 @@ router.post('/signup', csrfProtection, async (req: Request, res: Response) => {
 });
 
 // Sign in
-router.post('/signin', csrfProtection, async (req: Request, res: Response) => {
+router.post('/signin', async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     const sanitizedEmail = sanitizeInput(email);
@@ -143,7 +143,7 @@ router.get('/google/callback',
 );
 
 // Logout
-router.post('/logout', csrfProtection, authenticateUser, (req: AuthRequest, res: Response) => {
+router.post('/logout', authenticateUser, (req: AuthRequest, res: Response) => {
   res.json({ message: 'Logged out successfully' });
 });
 
