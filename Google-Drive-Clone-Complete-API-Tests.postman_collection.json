@@ -1,0 +1,719 @@
+{
+  "info": {
+    "name": "Google Drive Clone - Complete API Tests",
+    "description": "Complete API testing collection for Google Drive Clone backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": ""
+    },
+    {
+      "key": "fileId",
+      "value": ""
+    },
+    {
+      "key": "folderId",
+      "value": ""
+    },
+    {
+      "key": "shareToken",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          }
+        },
+        {
+          "name": "Signup",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('token', response.token);",
+                  "    pm.collectionVariables.set('userId', response.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"name\": \"Test User\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/signup",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "signup"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('token', response.token);",
+                  "    pm.collectionVariables.set('userId', response.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/signin",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "signin"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Folders",
+      "item": [
+        {
+          "name": "Create Folder",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('folderId', response.folder.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Folder\",\n  \"parentId\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/folders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "folders"]
+            }
+          }
+        },
+        {
+          "name": "Get Folders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/folders?limit=20&page=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "folders"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Rename Folder",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Renamed Test Folder\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/folders/{{folderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "folders", "{{folderId}}"]
+            }
+          }
+        },
+        {
+          "name": "Share Folder",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user2@example.com\",\n  \"permission\": \"edit\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/folders/{{folderId}}/permissions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "folders", "{{folderId}}", "permissions"]
+            }
+          }
+        },
+        {
+          "name": "Delete Folder (Soft)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/folders/{{folderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "folders", "{{folderId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Trash Folders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/folders/trash?limit=20&page=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "folders", "trash"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Restore Folder",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/folders/{{folderId}}/restore",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "folders", "{{folderId}}", "restore"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Files",
+      "item": [
+        {
+          "name": "Upload File",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('fileId', response.file.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "folderId",
+                  "value": "{{folderId}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/files/upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "files", "upload"]
+            }
+          }
+        },
+        {
+          "name": "Get Files",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/files?limit=20&page=1&folderId={{folderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "files"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "folderId",
+                  "value": "{{folderId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Rename File",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"renamed-file.txt\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/files/{{fileId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "files", "{{fileId}}"]
+            }
+          }
+        },
+        {
+          "name": "Generate Share Link",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('shareToken', response.shareToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/files/{{fileId}}/share",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "files", "{{fileId}}", "share"]
+            }
+          }
+        },
+        {
+          "name": "Share File with User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user2@example.com\",\n  \"permission\": \"view\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/files/{{fileId}}/permissions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "files", "{{fileId}}", "permissions"]
+            }
+          }
+        },
+        {
+          "name": "Get File Permissions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/files/{{fileId}}/permissions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "files", "{{fileId}}", "permissions"]
+            }
+          }
+        },
+        {
+          "name": "Get Signed Download URL",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/files/{{fileId}}/download",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "files", "{{fileId}}", "download"]
+            }
+          }
+        },
+        {
+          "name": "Access Shared File",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/files/shared/{{shareToken}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "files", "shared", "{{shareToken}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Shared File Download URL",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/files/shared/{{shareToken}}/download",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "files", "shared", "{{shareToken}}", "download"]
+            }
+          }
+        },
+        {
+          "name": "Delete File (Soft)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/files/{{fileId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "files", "{{fileId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Trash Files",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/files/trash?limit=20&page=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "files", "trash"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Restore File",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/files/{{fileId}}/restore",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "files", "{{fileId}}", "restore"]
+            }
+          }
+        },
+        {
+          "name": "Permanently Delete File",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/files/{{fileId}}/permanent",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "files", "{{fileId}}", "permanent"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search",
+      "item": [
+        {
+          "name": "Search All",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/search?q=test&limit=20&page=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "test"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Files Only",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/search?q=document&type=files&limit=20&page=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "document"
+                },
+                {
+                  "key": "type",
+                  "value": "files"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Advanced Search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/search/advanced?q=report&format=application/pdf&size_min=1000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search", "advanced"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "report"
+                },
+                {
+                  "key": "format",
+                  "value": "application/pdf"
+                },
+                {
+                  "key": "size_min",
+                  "value": "1000000"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
